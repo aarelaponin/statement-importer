@@ -33,7 +33,7 @@ mvn clean test
 
 This is the critical gap. Write a single integration test that:
 
-1. Reads the **actual** `bank_statement.csv` and `secu_statement.csv` from `_input-data`
+1. Reads the **actual** `bank_statement.csv` and `secu_statement.csv` from `test-data`
 2. Parses them through `CsvFormatDetector` → `StatementParser`
 3. Inserts via `RawTransactionPersister` into H2 tables **whose schemas match the Joget form definitions**
 4. Verifies row counts, specific field values, and column completeness
@@ -390,6 +390,34 @@ public class RealCsvEndToEndTest {
     }
 }
 ```
+
+### Level 2 Edge Case Tests
+
+In addition to the core pipeline tests, `RealCsvEndToEndTest` includes 8 edge case tests that validate real-world data scenarios:
+
+| Test | What It Validates |
+|------|-------------------|
+| `secuMandatoryFieldsNotNull` | No mandatory securities fields (value_date, transaction_date, type, ticker, currency, reference) are NULL |
+| `secuStockSplitTransactionsHandled` | NVDA stock split transactions: split- (qty=-20, price=780) and split+ (qty=200, price=78) with same reference |
+| `bankNegativeAmountsPreserved` | Negative amounts (e.g., -12.84) are preserved and correlate with Debit (D) indicator |
+| `bankMultiCurrencySegregation` | EUR and USD transactions are correctly segregated (EUR + USD = 161 total rows) |
+| `bankEmptyFieldsNotNull` | Optional fields stored as empty strings, not NULL (e.g., empty other_side_account for interest rows) |
+| `secuZeroFeeTransactions` | Zero fee transactions (e.g., LHV1T buys with fee=0.00) are correctly stored |
+| `bankCurrencyExchangeTransactions` | FX transactions produce paired rows: EUR side (Debit) and USD side (Credit) |
+| `secuHighPrecisionPrices` | 8-decimal price precision preserved (e.g., 1051.84722000 for HLMBK bond) |
+
+**Helper methods:**
+- `countNullMandatorySecuFields()` — counts securities rows with NULL mandatory fields
+- `countRowsByCurrency(table, currency)` — counts rows by currency in any table
+
+**Run edge case tests:**
+```bash
+mvn test -Dtest=RealCsvEndToEndTest
+```
+
+Expected: 13 tests pass (5 core + 8 edge case)
+
+---
 
 ### Level 3: Joget API Smoke Test (Against Live Joget)
 
