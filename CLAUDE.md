@@ -46,19 +46,19 @@ mvn javadoc:javadoc
 
 The `StatementImporter` plugin executes this pipeline:
 
-1. Read workflow variables (recordId, accountType, bank, dates)
-2. Validate required inputs
-3. Load statement record from `bank_statement` table via FormDataDao
-4. Resolve physical CSV file using FileUtil
-5. Delete existing raw rows (idempotency)
-6. Transition status: NEW -> IMPORTING (via `gam-framework` StatusManager)
-7. Detect CSV format from header line (`CsvFormatDetector`)
-8. Parse CSV rows (`StatementParser`)
-9. De-duplication check (`DeduplicationChecker`)
-10. Batch-insert non-duplicates (`RawTransactionPersister`)
-11. Update statement metadata (row_count, duplicate_count)
-12. Transition status: IMPORTING -> IMPORTED
-13. Set workflow variable statementStatus = "imported"
+1. Get record ID from workflow variable `id` (set by wf-activator)
+2. Load statement record from `bank_statement` table via FormDataDao
+3. Read form fields directly: account_type, bank, dates, statement_file
+4. Validate required inputs
+5. Resolve physical CSV file using FileUtil
+6. Delete existing raw rows (idempotency)
+7. Transition status: NEW -> IMPORTING (via `gam-framework` StatusManager)
+8. Detect CSV format from header line (`CsvFormatDetector`)
+9. Parse CSV rows (`StatementParser`)
+10. De-duplication check (`DeduplicationChecker`)
+11. Batch-insert non-duplicates (`RawTransactionPersister`)
+12. Update statement metadata (row_count, duplicate_count)
+13. Transition status: IMPORTING -> IMPORTED
 
 ### Package Structure
 
@@ -114,6 +114,12 @@ com.fiscaladmin.gam.statementimporter/
 | mockito 4.11.0 | Mocking |
 | h2 2.2.224 | In-memory DB for tests |
 
+**Build Order:** gam-framework must be installed first:
+```bash
+cd ../gam-framework && mvn clean install
+cd ../statement-importer && mvn clean package
+```
+
 ## Joget Integration Notes
 
 ### Plugin Registration
@@ -130,9 +136,21 @@ com.fiscaladmin.gam.statementimporter/
 
 ### Workflow Integration
 
-- Workflow variables read from `properties` map
-- Output variable set via `WorkflowManager.activityVariable()`
-- Assignment obtained from `properties.get("workflowAssignment")`
+**wf-activator Integration:**
+- Plugin is triggered via `wf-activator` as form Post-Processing Tool
+- Process name must be: `gam_statement_submission` (convention: `{serviceId}_submission`)
+- Service ID in wf-activator: `gam_statement`
+
+**Workflow Variable Requirements:**
+- Only ONE workflow variable required: `id` (String)
+- The `id` variable must be pre-defined in the process (Joget requirement)
+- Plugin reads all other data directly from the form record
+
+**How it works:**
+1. wf-activator passes form `id` as workflow variable
+2. Plugin gets `id` via `WorkflowManager.getProcessVariable()`
+3. Plugin loads form record using that ID
+4. Plugin reads `account_type`, `bank`, `from_date`, `to_date`, `statement_file` from form
 
 ### Status Management
 
@@ -217,10 +235,14 @@ log4j.logger.com.fiscaladmin.gam.statementimporter=DEBUG
 
 | Issue | Cause | Solution |
 |-------|-------|----------|
+| "Statement record not found: null" | `id` variable not defined in process | Add `id` workflow variable to process definition |
+| "Statement record not found: 12345" | Wrong ID (process number, not record ID) | Ensure `id` variable defined and process redeployed |
+| "Unknown column 'c_error_message'" | Missing field in form | Add `error_message` field to statement form |
+| "context attribute X does not exist" | Workflow variable not pre-defined | Define required variables in process before deploying |
 | UnrecognisedFormatException | Header doesn't match patterns | Check CSV header row unchanged |
-| Format mismatch | Wrong account_type | Verify workflow variable |
+| Format mismatch | Wrong account_type | Verify account_type matches CSV format |
 | File not found | FileUtil path issue | Check file upload in Joget |
-| SQL error | Missing table/column | Verify table structure |
+| SQL error | Missing table/column | Verify form field IDs match MappingConfig |
 
 ### Log Prefixes
 
@@ -285,5 +307,17 @@ log4j.logger.com.fiscaladmin.gam.statementimporter=DEBUG
 ## Related Documentation
 
 - [README.md](README.md) - Project overview and setup
+- [docs/DEPLOYMENT_GUIDE.md](docs/DEPLOYMENT_GUIDE.md) - **Complete deployment instructions with wf-activator**
 - [docs/TECHNICAL.md](docs/TECHNICAL.md) - Detailed API documentation
 - [docs/USER_GUIDE.md](docs/USER_GUIDE.md) - End-user instructions
+
+## Deployment Quick Reference
+
+| Item | Value |
+|------|-------|
+| Plugin JAR | `target/statement-importer-8.1-SNAPSHOT.jar` |
+| Required plugin | wf-activator |
+| Process name | `gam_statement_submission` |
+| Service ID | `gam_statement` |
+| Required workflow variable | `id` (String) - must be pre-defined in process |
+| Required form field | `error_message` (Text Area) |
