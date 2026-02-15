@@ -370,6 +370,240 @@ public class RealCsvEndToEndTest {
     }
 
     // -------------------------------------------------------------------------
+    // Test 6: Securities mandatory fields not null
+    // -------------------------------------------------------------------------
+
+    @Test
+    public void secuMandatoryFieldsNotNull() throws Exception {
+        File secuFile = new File(SECU_CSV);
+        if (!secuFile.exists()) {
+            System.out.println("SKIP: secuMandatoryFieldsNotNull — CSV not found");
+            return;
+        }
+
+        List<String[]> rows = StatementParser.parse(secuFile, Format.SECURITIES);
+        RawTransactionPersister.persist(rows, "NULL-CHECK-SECU", SECU_CONFIG, con);
+
+        int nullCount = countNullMandatorySecuFields();
+        assertEquals("No mandatory secu fields should be NULL", 0, nullCount);
+    }
+
+    // -------------------------------------------------------------------------
+    // Test 7: Stock split transactions handled
+    // -------------------------------------------------------------------------
+
+    @Test
+    public void secuStockSplitTransactionsHandled() throws Exception {
+        File secuFile = new File(SECU_CSV);
+        if (!secuFile.exists()) {
+            System.out.println("SKIP: secuStockSplitTransactionsHandled — CSV not found");
+            return;
+        }
+
+        List<String[]> rows = StatementParser.parse(secuFile, Format.SECURITIES);
+        RawTransactionPersister.persist(rows, "SPLIT-TEST", SECU_CONFIG, con);
+
+        // Verify NVDA split- (quantity=-20, price=780.00000000)
+        try (PreparedStatement ps = con.prepareStatement(
+                "SELECT c_quantity, c_price, c_amount, c_reference FROM app_fd_sec_account_trx "
+                        + "WHERE c_ticker = 'NVDA' AND c_type = 'split-'")) {
+            try (ResultSet rs = ps.executeQuery()) {
+                assertTrue("Should have split- row for NVDA", rs.next());
+                assertEquals("-20", rs.getString("c_quantity"));
+                assertEquals("780.00000000", rs.getString("c_price"));
+                assertEquals("0.00", rs.getString("c_amount"));
+                String splitMinusRef = rs.getString("c_reference");
+
+                // Verify split+ exists with same reference
+                try (PreparedStatement ps2 = con.prepareStatement(
+                        "SELECT c_quantity, c_price, c_amount, c_reference FROM app_fd_sec_account_trx "
+                                + "WHERE c_ticker = 'NVDA' AND c_type = 'split+'")) {
+                    try (ResultSet rs2 = ps2.executeQuery()) {
+                        assertTrue("Should have split+ row for NVDA", rs2.next());
+                        assertEquals("200", rs2.getString("c_quantity"));
+                        assertEquals("78.00000000", rs2.getString("c_price"));
+                        assertEquals("0.00", rs2.getString("c_amount"));
+                        assertEquals("Same reference for split+/-", splitMinusRef, rs2.getString("c_reference"));
+                    }
+                }
+            }
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Test 8: Negative amounts preserved
+    // -------------------------------------------------------------------------
+
+    @Test
+    public void bankNegativeAmountsPreserved() throws Exception {
+        File bankFile = new File(BANK_CSV);
+        if (!bankFile.exists()) {
+            System.out.println("SKIP: bankNegativeAmountsPreserved — CSV not found");
+            return;
+        }
+
+        List<String[]> rows = StatementParser.parse(bankFile, Format.LHV_BANK);
+        RawTransactionPersister.persist(rows, "NEG-TEST", LHV_BANK_CONFIG, con);
+
+        // Last row (161) has negative amount -12.84 USD
+        String lastAmount = getColumnValue("app_fd_bank_account_trx", "c_payment_amount", "c_transaction_id = '161'");
+        assertTrue("Last row should have negative amount", lastAmount.startsWith("-"));
+        assertEquals("-12.84", lastAmount);
+
+        // Verify negative amounts correlate with Debit (D)
+        try (Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(
+                     "SELECT COUNT(*) FROM app_fd_bank_account_trx "
+                             + "WHERE c_payment_amount LIKE '-%' AND c_d_c != 'D'")) {
+            rs.next();
+            assertEquals("All negative amounts should be Debits", 0, rs.getInt(1));
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Test 9: Multi-currency segregation
+    // -------------------------------------------------------------------------
+
+    @Test
+    public void bankMultiCurrencySegregation() throws Exception {
+        File bankFile = new File(BANK_CSV);
+        if (!bankFile.exists()) {
+            System.out.println("SKIP: bankMultiCurrencySegregation — CSV not found");
+            return;
+        }
+
+        List<String[]> rows = StatementParser.parse(bankFile, Format.LHV_BANK);
+        RawTransactionPersister.persist(rows, "CURRENCY-TEST", LHV_BANK_CONFIG, con);
+
+        int eurCount = countRowsByCurrency("app_fd_bank_account_trx", "EUR");
+        int usdCount = countRowsByCurrency("app_fd_bank_account_trx", "USD");
+
+        assertTrue("Should have EUR transactions", eurCount > 0);
+        assertTrue("Should have USD transactions", usdCount > 0);
+        assertEquals("EUR + USD should equal 161", 161, eurCount + usdCount);
+    }
+
+    // -------------------------------------------------------------------------
+    // Test 10: Empty fields not null
+    // -------------------------------------------------------------------------
+
+    @Test
+    public void bankEmptyFieldsNotNull() throws Exception {
+        File bankFile = new File(BANK_CSV);
+        if (!bankFile.exists()) {
+            System.out.println("SKIP: bankEmptyFieldsNotNull — CSV not found");
+            return;
+        }
+
+        List<String[]> rows = StatementParser.parse(bankFile, Format.LHV_BANK);
+        RawTransactionPersister.persist(rows, "EMPTY-TEST", LHV_BANK_CONFIG, con);
+
+        // Check that optional fields are empty string, not NULL
+        try (Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(
+                     "SELECT COUNT(*) FROM app_fd_bank_account_trx "
+                             + "WHERE c_other_side_account IS NULL "
+                             + "   OR c_reference_number IS NULL "
+                             + "   OR c_initiator IS NULL")) {
+            rs.next();
+            assertEquals("Optional fields should be empty string, not NULL", 0, rs.getInt(1));
+        }
+
+        // Verify empty strings exist (interest rows have empty counterparty)
+        try (Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(
+                     "SELECT COUNT(*) FROM app_fd_bank_account_trx "
+                             + "WHERE c_other_side_account = ''")) {
+            rs.next();
+            assertTrue("Should have rows with empty other_side_account", rs.getInt(1) > 0);
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Test 11: Zero fee transactions
+    // -------------------------------------------------------------------------
+
+    @Test
+    public void secuZeroFeeTransactions() throws Exception {
+        File secuFile = new File(SECU_CSV);
+        if (!secuFile.exists()) {
+            System.out.println("SKIP: secuZeroFeeTransactions — CSV not found");
+            return;
+        }
+
+        List<String[]> rows = StatementParser.parse(secuFile, Format.SECURITIES);
+        RawTransactionPersister.persist(rows, "ZEROFEE-TEST", SECU_CONFIG, con);
+
+        try (Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(
+                     "SELECT COUNT(*) FROM app_fd_sec_account_trx WHERE c_fee = '0.00'")) {
+            rs.next();
+            assertTrue("Should have transactions with zero fee", rs.getInt(1) > 0);
+        }
+
+        // Verify LHV1T buys have zero fee
+        try (PreparedStatement ps = con.prepareStatement(
+                "SELECT c_fee FROM app_fd_sec_account_trx WHERE c_ticker = 'LHV1T' AND c_type = 'ost' LIMIT 1")) {
+            try (ResultSet rs = ps.executeQuery()) {
+                assertTrue(rs.next());
+                assertEquals("LHV1T buys should have zero fee", "0.00", rs.getString("c_fee"));
+            }
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Test 12: Currency exchange transactions
+    // -------------------------------------------------------------------------
+
+    @Test
+    public void bankCurrencyExchangeTransactions() throws Exception {
+        File bankFile = new File(BANK_CSV);
+        if (!bankFile.exists()) {
+            System.out.println("SKIP: bankCurrencyExchangeTransactions — CSV not found");
+            return;
+        }
+
+        List<String[]> rows = StatementParser.parse(bankFile, Format.LHV_BANK);
+        RawTransactionPersister.persist(rows, "FX-TEST", LHV_BANK_CONFIG, con);
+
+        try (Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(
+                     "SELECT c_d_c, c_currency, c_payment_amount FROM app_fd_bank_account_trx "
+                             + "WHERE c_payment_description LIKE '%Currency exchange%' "
+                             + "ORDER BY c_currency")) {
+            // EUR side (debit)
+            assertTrue("Should have currency exchange rows", rs.next());
+            assertEquals("EUR", rs.getString("c_currency"));
+            assertEquals("EUR side should be Debit", "D", rs.getString("c_d_c"));
+
+            // USD side (credit)
+            assertTrue("Should have second currency exchange row", rs.next());
+            assertEquals("USD", rs.getString("c_currency"));
+            assertEquals("USD side should be Credit", "C", rs.getString("c_d_c"));
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Test 13: High precision prices
+    // -------------------------------------------------------------------------
+
+    @Test
+    public void secuHighPrecisionPrices() throws Exception {
+        File secuFile = new File(SECU_CSV);
+        if (!secuFile.exists()) {
+            System.out.println("SKIP: secuHighPrecisionPrices — CSV not found");
+            return;
+        }
+
+        List<String[]> rows = StatementParser.parse(secuFile, Format.SECURITIES);
+        RawTransactionPersister.persist(rows, "PRECISION-TEST", SECU_CONFIG, con);
+
+        // First HLMBK bond has 8 decimal precision
+        assertColumnEquals("app_fd_sec_account_trx", "c_price", "c_ticker = 'HLMBK095034FA' AND c_transaction_id = '001'",
+                "1051.84722000", "Price should preserve full decimal precision");
+    }
+
+    // -------------------------------------------------------------------------
     // Helper methods
     // -------------------------------------------------------------------------
 
@@ -424,6 +658,36 @@ public class RealCsvEndToEndTest {
                              + "   OR c_currency IS NULL")) {
             rs.next();
             return rs.getInt(1);
+        }
+    }
+
+    /**
+     * Counts rows in sec_account_trx where any mandatory field is NULL.
+     * Mandatory fields: value_date, transaction_date, type, ticker, currency, reference.
+     */
+    private int countNullMandatorySecuFields() throws SQLException {
+        try (Statement stmt = con.createStatement();
+             ResultSet rs = stmt.executeQuery(
+                     "SELECT COUNT(*) FROM app_fd_sec_account_trx "
+                             + "WHERE c_value_date IS NULL "
+                             + "   OR c_transaction_date IS NULL "
+                             + "   OR c_type IS NULL "
+                             + "   OR c_ticker IS NULL "
+                             + "   OR c_currency IS NULL "
+                             + "   OR c_reference IS NULL")) {
+            rs.next();
+            return rs.getInt(1);
+        }
+    }
+
+    private int countRowsByCurrency(String table, String currency) throws SQLException {
+        try (PreparedStatement ps = con.prepareStatement(
+                "SELECT COUNT(*) FROM " + table + " WHERE c_currency = ?")) {
+            ps.setString(1, currency);
+            try (ResultSet rs = ps.executeQuery()) {
+                rs.next();
+                return rs.getInt(1);
+            }
         }
     }
 }
