@@ -1,0 +1,13 @@
+[
+    {
+        "title": "Statement Consolidator",
+        "properties": [
+            {
+                "name": "info",
+                "label": "Configuration",
+                "type": "label",
+                "value": "This plugin consolidates raw imported transaction rows into summary rows via GROUP BY aggregation. No configuration needed - just add it to your workflow after Statement Importer."
+            }
+        ]
+    }
+]

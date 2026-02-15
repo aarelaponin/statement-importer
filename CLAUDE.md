@@ -13,7 +13,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-This is a **Joget DX 8 Process Tool plugin** that imports CSV bank/securities statement files. It detects format, performs de-duplication, and batch-inserts raw transaction rows into staging tables.
+This is a **Joget DX 8 Process Tool plugin bundle** that handles CSV bank/securities statement processing:
+
+1. **StatementImporter** - Imports CSV files, detects format, performs de-duplication, and batch-inserts raw transaction rows into staging tables
+2. **StatementConsolidator** - Consolidates raw rows into summary rows via GROUP BY aggregation
 
 ## Build Commands
 
@@ -42,7 +45,7 @@ mvn javadoc:javadoc
 
 ## Architecture Overview
 
-### Core Pipeline (13 Steps)
+### Import Pipeline (13 Steps) - StatementImporter
 
 The `StatementImporter` plugin executes this pipeline:
 
@@ -52,34 +55,64 @@ The `StatementImporter` plugin executes this pipeline:
 4. Validate required inputs
 5. Resolve physical CSV file using FileUtil
 6. Delete existing raw rows (idempotency)
-7. Transition status: NEW -> IMPORTING (via `gam-framework` StatusManager)
+7. Transition status: NEW → IMPORTING (via `gam-framework` StatusManager)
 8. Detect CSV format from header line (`CsvFormatDetector`)
 9. Parse CSV rows (`StatementParser`)
 10. De-duplication check (`DeduplicationChecker`)
 11. Batch-insert non-duplicates (`RawTransactionPersister`)
 12. Update statement metadata (row_count, duplicate_count)
-13. Transition status: IMPORTING -> IMPORTED
+13. Transition status: IMPORTING → IMPORTED
+
+### Consolidation Pipeline (9 Steps) - StatementConsolidator
+
+The `StatementConsolidator` plugin runs as Activity 2 (after import):
+
+1. Get record ID from workflow variable `id`
+2. Load statement record via FormDataDao
+3. Read account_type to determine bank vs securities
+4. Transition status: IMPORTED → CONSOLIDATING
+5. Delete existing consolidated rows (idempotency)
+6. Execute GROUP BY query on raw transactions
+7. Batch-insert consolidated rows with statement references (STMT{YYYY}.{SEQ})
+8. Update statement metadata (total_count)
+9. Transition status: CONSOLIDATING → CONSOLIDATED
+
+**Consolidation Logic:**
+
+| Account Type | Raw Table | Target Table | GROUP BY Columns |
+|--------------|-----------|--------------|------------------|
+| Bank | app_fd_bank_account_trx | app_fd_bank_total_trx | 11 columns: account_number, document_nr, payment_date, other_side_account, other_side_name, other_side_bank, d_c, payment_description, currency, customer_id, other_side_bic |
+| Securities | app_fd_sec_account_trx | app_fd_secu_total_trx | 6 columns: value_date, transaction_date, type, ticker, description, currency |
+
+**Aggregations:**
+- Bank: SUM(payment_amount), SUM(transaction_fee), GROUP_CONCAT(provider_reference)
+- Securities: SUM(quantity), AVG(price), SUM(amount), SUM(fee), SUM(total_amount), GROUP_CONCAT(reference)
 
 ### Package Structure
 
 ```
 com.fiscaladmin.gam.statementimporter/
 ├── lib/
-│   └── StatementImporter.java    # Main plugin (orchestrator)
+│   ├── StatementImporter.java       # Import plugin (orchestrator)
+│   └── StatementConsolidator.java   # Consolidation plugin (orchestrator)
 ├── parser/
-│   ├── Format.java               # Enum: LHV_BANK, SWEDBANK, SECURITIES
-│   ├── CsvFormatDetector.java    # Header-based format detection
-│   ├── StatementParser.java      # Apache Commons CSV wrapper
+│   ├── Format.java                  # Enum: LHV_BANK, SWEDBANK, SECURITIES
+│   ├── CsvFormatDetector.java       # Header-based format detection
+│   ├── StatementParser.java         # Apache Commons CSV wrapper
 │   └── UnrecognisedFormatException.java
 ├── mapping/
-│   ├── FieldMapping.java         # CSV index -> DB column
-│   ├── MappingConfig.java        # Table + mappings container
-│   └── MappingConfigurations.java # Static configs per format
+│   ├── FieldMapping.java            # CSV index -> DB column
+│   ├── MappingConfig.java           # Table + mappings container
+│   └── MappingConfigurations.java   # Static configs per format
 ├── dedup/
-│   ├── DeduplicationChecker.java # Duplicate detection
-│   └── DeduplicationResult.java  # Result container
-└── persister/
-    └── RawTransactionPersister.java # JDBC batch insert
+│   ├── DeduplicationChecker.java    # Duplicate detection
+│   └── DeduplicationResult.java     # Result container
+├── persister/
+│   └── RawTransactionPersister.java # JDBC batch insert for raw rows
+└── consolidation/
+    ├── BankConsolidationQuery.java      # Bank GROUP BY + INSERT SQL
+    ├── SecuConsolidationQuery.java      # Securities GROUP BY + INSERT SQL
+    └── ConsolidatedRowPersister.java    # JDBC batch insert for consolidated rows
 ```
 
 ### CSV Format Detection
@@ -99,9 +132,16 @@ com.fiscaladmin.gam.statementimporter/
 
 ### Database Tables
 
+**Statement:**
 - `app_fd_bank_statement` - Statement metadata and status
+
+**Raw Transactions (from import):**
 - `app_fd_bank_account_trx` - Bank transaction rows (18 mapped fields)
 - `app_fd_sec_account_trx` - Securities transaction rows (13 mapped fields)
+
+**Consolidated Transactions (from consolidation):**
+- `app_fd_bank_total_trx` - Consolidated bank transactions
+- `app_fd_secu_total_trx` - Consolidated securities transactions
 
 ## Key Dependencies
 
@@ -124,9 +164,11 @@ cd ../statement-importer && mvn clean package
 
 ### Plugin Registration
 
-- Plugin registered via OSGi `Activator` class
-- Implements `DefaultApplicationPlugin` (Process Tool)
-- Registered service: `StatementImporter.class.getName()`
+- Plugins registered via OSGi `Activator` class
+- Both implement `DefaultApplicationPlugin` (Process Tool)
+- Registered services:
+  - `StatementImporter.class.getName()`
+  - `StatementConsolidator.class.getName()`
 
 ### Table Naming Convention
 
@@ -156,7 +198,8 @@ cd ../statement-importer && mvn clean package
 
 - Uses gam-framework's `StatusManager.transition()`
 - Entity type: `EntityType.STATEMENT`
-- Status values: `NEW`, `IMPORTING`, `IMPORTED`, `ERROR`
+- Status flow: `NEW` → `IMPORTING` → `IMPORTED` → `CONSOLIDATING` → `CONSOLIDATED`
+- Error status: `ERROR` (can occur at any stage)
 
 ## Testing Guidelines
 
@@ -171,6 +214,10 @@ cd ../statement-importer && mvn clean package
 | persister | RawTransactionPersisterTest | Batch insert (H2) |
 | persister | RealCsvEndToEndTest | End-to-end with real CSVs (13 tests) |
 | lib | StatementImporterTest | Plugin execution |
+| consolidation | BankConsolidationTest | Bank GROUP BY + aggregation |
+| consolidation | SecuConsolidationTest | Securities GROUP BY + aggregation |
+| consolidation | ConsolidatedRowPersisterTest | Consolidated row batch insert |
+| consolidation | ConsolidationEndToEndTest | Full consolidation pipeline |
 
 ### RealCsvEndToEndTest Coverage
 
@@ -243,13 +290,18 @@ log4j.logger.com.fiscaladmin.gam.statementimporter=DEBUG
 | Format mismatch | Wrong account_type | Verify account_type matches CSV format |
 | File not found | FileUtil path issue | Check file upload in Joget |
 | SQL error | Missing table/column | Verify form field IDs match MappingConfig |
+| Consolidated table empty | Wrong target table name | Verify table names: bank_total_trx, secu_total_trx |
+| MySQL reserved keyword error | Column alias uses reserved word | Escape with backticks (e.g., \`references\`) |
+| Fewer consolidated rows than expected | GROUP BY too aggressive | Check GROUP BY columns match original design |
 
 ### Log Prefixes
 
-- `StatementImporter` - Main orchestration
+- `StatementImporter` - Import orchestration
+- `StatementConsolidator` - Consolidation orchestration
 - `CsvFormatDetector` - Format detection
 - `DeduplicationChecker` - Dedup results
-- `RawTransactionPersister` - Batch insert
+- `RawTransactionPersister` - Raw row batch insert
+- `ConsolidatedRowPersister` - Consolidated row batch insert
 
 ## Code Conventions
 
@@ -321,3 +373,6 @@ log4j.logger.com.fiscaladmin.gam.statementimporter=DEBUG
 | Service ID | `gam_statement` |
 | Required workflow variable | `id` (String) - must be pre-defined in process |
 | Required form field | `error_message` (Text Area) |
+| Plugins in bundle | StatementImporter, StatementConsolidator |
+| Activity 1 | StatementImporter (NEW → IMPORTED) |
+| Activity 2 | StatementConsolidator (IMPORTED → CONSOLIDATED) |
