@@ -1,0 +1,13 @@
+[
+    {
+        "title": "Statement Importer",
+        "properties": [
+            {
+                "name": "info",
+                "label": "Configuration",
+                "type": "label",
+                "value": "This plugin automatically reads all data from the statement form record. No configuration needed - just add it to your workflow."
+            }
+        ]
+    }
+]
