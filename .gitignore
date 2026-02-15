@@ -7,3 +7,6 @@ target/
 
 # OS files
 .DS_Store
+
+test-data
+screens
