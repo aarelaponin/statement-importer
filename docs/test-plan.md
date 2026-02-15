@@ -425,13 +425,17 @@ After Level 2 passes, verify via the Joget Form Data REST API that the forms can
 
 **Prerequisite:** Your Joget instance is running and forms F01.00, F01.01, F01.02 are deployed.
 
+**API Authentication:** Use API key headers (`api_id` and `api_key`) instead of basic auth.
+
 #### Step A — Create a Statement Record via API
 
 ```bash
 # Create a parent statement record first
-curl -X POST "http://localhost:8080/jw/api/data/app/gamBackOffice/form/bankStatement" \
-  -H "Content-Type: application/json" \
-  -u "admin:admin" \
+curl -X POST "http://localhost:8082/jw/api/form/bankStatement" \
+  -H 'accept: application/json' \
+  -H 'api_id: API-45528ac6-975f-4a3b-b884-54e5ddbcc00c' \
+  -H 'api_key: 8c04d5332aa34484a62fe1fb1e6e5900' \
+  -H 'Content-Type: application/json' \
   -d '{
     "id": "TEST-API-001",
     "bank": "LHVBEE22",
@@ -445,9 +449,11 @@ curl -X POST "http://localhost:8080/jw/api/data/app/gamBackOffice/form/bankState
 #### Step B — Insert a Single Bank Transaction Row via API
 
 ```bash
-curl -X POST "http://localhost:8080/jw/api/data/app/gamBackOffice/form/bankAccountTransaction" \
-  -H "Content-Type: application/json" \
-  -u "admin:admin" \
+curl -X POST "http://localhost:8082/jw/api/form/bankAccountTransaction" \
+  -H 'accept: application/json' \
+  -H 'api_id: API-45528ac6-975f-4a3b-b884-54e5ddbcc00c' \
+  -H 'api_key: 8c04d5332aa34484a62fe1fb1e6e5900' \
+  -H 'Content-Type: application/json' \
   -d '{
     "id": "TEST-TRX-001",
     "statement_id": "TEST-API-001",
@@ -477,20 +483,19 @@ curl -X POST "http://localhost:8080/jw/api/data/app/gamBackOffice/form/bankAccou
 
 ```bash
 # Read it back
-curl -s "http://localhost:8080/jw/api/data/app/gamBackOffice/form/bankAccountTransaction/TEST-TRX-001" \
-  -u "admin:admin" | python3 -m json.tool
-
-# List all rows for this statement (via datalist or direct SQL)
-curl -s "http://localhost:8080/jw/api/data/app/gamBackOffice/form/bankAccountTransaction?d-6282340-fn_c_statement_id=TEST-API-001" \
-  -u "admin:admin" | python3 -m json.tool
+curl -s "http://localhost:8082/jw/api/form/bankAccountTransaction/TEST-TRX-001" \
+  -H 'api_id: API-45528ac6-975f-4a3b-b884-54e5ddbcc00c' \
+  -H 'api_key: 8c04d5332aa34484a62fe1fb1e6e5900' | python3 -m json.tool
 ```
 
 #### Step D — Insert a Securities Transaction Row
 
 ```bash
-curl -X POST "http://localhost:8080/jw/api/data/app/gamBackOffice/form/securityTransaction" \
-  -H "Content-Type: application/json" \
-  -u "admin:admin" \
+curl -X POST "http://localhost:8082/jw/api/form/securityTransaction" \
+  -H 'accept: application/json' \
+  -H 'api_id: API-45528ac6-975f-4a3b-b884-54e5ddbcc00c' \
+  -H 'api_key: 8c04d5332aa34484a62fe1fb1e6e5900' \
+  -H 'Content-Type: application/json' \
   -d '{
     "id": "TEST-SECU-TRX-001",
     "statement_id": "TEST-API-001",
@@ -522,14 +527,17 @@ Open the browser:
 
 ```bash
 # Delete test data
-curl -X DELETE "http://localhost:8080/jw/api/data/app/gamBackOffice/form/bankAccountTransaction/TEST-TRX-001" \
-  -u "admin:admin"
+curl -X DELETE "http://localhost:8082/jw/api/form/bankAccountTransaction/TEST-TRX-001" \
+  -H 'api_id: API-45528ac6-975f-4a3b-b884-54e5ddbcc00c' \
+  -H 'api_key: 8c04d5332aa34484a62fe1fb1e6e5900'
 
-curl -X DELETE "http://localhost:8080/jw/api/data/app/gamBackOffice/form/securityTransaction/TEST-SECU-TRX-001" \
-  -u "admin:admin"
+curl -X DELETE "http://localhost:8082/jw/api/form/securityTransaction/TEST-SECU-TRX-001" \
+  -H 'api_id: API-45528ac6-975f-4a3b-b884-54e5ddbcc00c' \
+  -H 'api_key: 8c04d5332aa34484a62fe1fb1e6e5900'
 
-curl -X DELETE "http://localhost:8080/jw/api/data/app/gamBackOffice/form/bankStatement/TEST-API-001" \
-  -u "admin:admin"
+curl -X DELETE "http://localhost:8082/jw/api/form/bankStatement/TEST-API-001" \
+  -H 'api_id: API-45528ac6-975f-4a3b-b884-54e5ddbcc00c' \
+  -H 'api_key: 8c04d5332aa34484a62fe1fb1e6e5900'
 ```
 
 ---
