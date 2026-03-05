@@ -216,6 +216,57 @@ public class BankConsolidationTest extends ConsolidationTestBase {
     }
 
     // -------------------------------------------------------------------------
+    // Transaction references concatenated
+    // -------------------------------------------------------------------------
+
+    @Test
+    public void transactionReferencesConcatenated() throws Exception {
+        File bankFile = new File(BANK_CSV);
+        if (!bankFile.exists()) {
+            System.out.println("SKIP: transactionReferencesConcatenated — bank_statement.csv not found");
+            return;
+        }
+
+        loadAndPersistBankCsv(STATEMENT_ID);
+        List<Map<String, String>> consolidated = executeGroupBy(STATEMENT_ID);
+
+        // Verify readRow populates c_transaction_reference
+        boolean anyNonEmpty = false;
+        for (Map<String, String> row : consolidated) {
+            assertNotNull("c_transaction_reference key should exist in readRow output",
+                row.get("c_transaction_reference"));
+            if (!row.get("c_transaction_reference").isEmpty()) {
+                anyNonEmpty = true;
+            }
+        }
+        assertTrue("At least some rows should have non-empty transaction references", anyNonEmpty);
+
+        // Persist and verify it lands in the target table
+        ConsolidatedRowPersister.persist(
+            consolidated,
+            STATEMENT_ID,
+            "STMT2024",
+            BankConsolidationQuery.INSERT_SQL,
+            BankConsolidationQuery.INSERT_COLUMNS,
+            BankConsolidationQuery.TARGET_TABLE,
+            con
+        );
+
+        // Find a row with multiple transaction references (comma-separated = aggregated group)
+        try (PreparedStatement ps = con.prepareStatement(
+                "SELECT c_transaction_reference FROM app_fd_bank_total_trx WHERE c_transaction_reference LIKE '%,%' LIMIT 1")) {
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    String refs = rs.getString("c_transaction_reference");
+                    assertNotNull("Transaction reference should not be null", refs);
+                    assertTrue("Transaction reference should contain comma for merged rows",
+                        refs.contains(","));
+                }
+            }
+        }
+    }
+
+    // -------------------------------------------------------------------------
     // Helper method
     // -------------------------------------------------------------------------
 

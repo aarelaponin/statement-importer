@@ -108,6 +108,7 @@ public abstract class ConsolidationTestBase {
                 + "c_payment_amount VARCHAR(255), "
                 + "c_transaction_fee VARCHAR(255), "
                 + "c_provider_reference TEXT, "
+                + "c_transaction_reference TEXT, "
                 + "c_status VARCHAR(50), "
                 + "dateCreated VARCHAR(50), "
                 + "createdBy VARCHAR(255)"

@@ -33,6 +33,7 @@ import java.util.Map;
  *   <li>c_payment_amount: SUM</li>
  *   <li>c_transaction_fee: SUM</li>
  *   <li>c_provider_reference: GROUP_CONCAT</li>
+ *   <li>c_transaction_reference: GROUP_CONCAT</li>
  * </ul>
  */
 public final class BankConsolidationQuery {
@@ -65,7 +66,8 @@ public final class BankConsolidationQuery {
         "  c_other_side_bic, " +
         "  ROUND(SUM(CAST(c_payment_amount AS DECIMAL(15,2))), 2) AS total_amount, " +
         "  ROUND(SUM(CAST(c_transaction_fee AS DECIMAL(15,2))), 2) AS total_fee, " +
-        "  GROUP_CONCAT(c_provider_reference ORDER BY c_transaction_id SEPARATOR ',') AS provider_references " +
+        "  GROUP_CONCAT(c_provider_reference ORDER BY c_transaction_id SEPARATOR ',') AS provider_references, " +
+        "  GROUP_CONCAT(c_transaction_reference ORDER BY c_transaction_id SEPARATOR ',') AS transaction_references " +
         "FROM " + SOURCE_TABLE + " " +
         "WHERE c_statement_id = ? " +
         "GROUP BY c_account_number, c_document_nr, c_payment_date, c_other_side_account, " +
@@ -95,6 +97,7 @@ public final class BankConsolidationQuery {
         "c_payment_amount",
         "c_transaction_fee",
         "c_provider_reference",
+        "c_transaction_reference",
         "c_status",
         "dateCreated",
         "createdBy"
@@ -122,10 +125,11 @@ public final class BankConsolidationQuery {
         "c_payment_amount, " +
         "c_transaction_fee, " +
         "c_provider_reference, " +
+        "c_transaction_reference, " +
         "c_status, " +
         "dateCreated, " +
         "createdBy" +
-        ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        ") VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
     /**
      * DELETE statement for idempotency — removes existing consolidated rows
@@ -159,6 +163,7 @@ public final class BankConsolidationQuery {
         row.put("c_payment_amount", rs.getString("total_amount"));
         row.put("c_transaction_fee", rs.getString("total_fee"));
         row.put("c_provider_reference", rs.getString("provider_references"));
+        row.put("c_transaction_reference", rs.getString("transaction_references"));
         return row;
     }
 
