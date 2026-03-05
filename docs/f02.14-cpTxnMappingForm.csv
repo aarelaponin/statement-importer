@@ -1,0 +1,48 @@
+id,mappingName,counterpartyId,sourceType,matchingField,matchOperator,matchValue,caseSensitive,internalType,priority,status,effectiveDate
+TXMP-000001,LHV Interest Income,CPT0354,bank,payment_description,contains,intress,,INT_INCOME,2,Active,2024-06-01
+TXMP-000002,LHV Loan Interest,CPT0354,bank,payment_description,contains,laenuleping,,INT_EXPENSE,2,Active,2024-06-01
+TXMP-000003,Securities Buy - LHV,CPT0354,bank,payment_description,contains,Securities buy,,SEC_BUY,2,Active,2024-06-01
+TXMP-000004,Securities Sell - LHV,CPT0354,bank,payment_description,contains,Securities sell,,SEC_SELL,2,Active,2024-06-01
+TXMP-000005,Securities Commission,CPT0354,bank,payment_description,contains,Securities commission fee,,COMM_FEE,2,Active,2024-06-01
+TXMP-000006,Dividend Income,CPT0354,bank,payment_description,contains,Dividends,,DIV_INCOME,2,Active,2024-06-01
+TXMP-000007,Account Interest Credit,CPT0354,bank,payment_description,contains,Account interest,,INT_INCOME,2,Active,2024-06-01
+TXMP-000008,Management Fee,SYSTEM,bank,payment_description,contains,halduslepingule,,MGMT_FEE,3,Active,2024-06-01
+TXMP-000009,Loan Payment Received,SYSTEM,bank,payment_description,contains,laenu tagasimakse,,LOAN_PAYMENT,3,Active,2024-06-01
+TXMP-000010,Investment Return,SYSTEM,bank,payment_description,contains,investment,,INV_INCOME,3,Active,2024-06-01
+TXMP-000011,Asset Return,SYSTEM,bank,payment_description,contains,Return of assets,,ASSET_RETURN,3,Active,2024-06-01
+TXMP-000012,Interest Payment,SYSTEM,bank,payment_description,contains,Interest payment,,INT_EXPENSE,3,Active,2024-06-01
+TXMP-000013,Generic Credit,SYSTEM,bank,d_c,equals,C,true,CASH_IN,5,Active,2024-06-01
+TXMP-000014,Generic Debit,SYSTEM,bank,d_c,equals,D,true,CASH_OUT,5,Active,2024-06-01
+TXMP-000015,Equity Buy Order,CPT0359,secu,type,equals,ost,,EQ_BUY,2,Active,2024-06-01
+TXMP-000016,Equity Sell Order,CPT0359,secu,type,equals,müük,,EQ_SELL,2,Active,2024-06-01
+TXMP-000017,Bond Purchase,CPT0359,secu,description,contains,võlakiri,,BOND_BUY,2,Active,2024-06-01
+TXMP-000018,Dividend Distribution,CPT0359,secu,type,equals,dividend,,DIV_INCOME,2,Active,2024-06-01
+TXMP-000019,Stock Split In,CPT0359,secu,type,equals,split+,,SPLIT_IN,2,Active,2024-06-01
+TXMP-000020,Stock Split Out,CPT0359,secu,type,equals,split-,,SPLIT_OUT,2,Active,2024-06-01
+TXMP-000021,Securities Deposit,CPT0361,secu,type,equals,deposit,,SEC_DEPOSIT,2,Active,2024-06-01
+TXMP-000022,Securities Withdrawal,CPT0361,secu,type,equals,withdrawal,,SEC_WITHDRAW,2,Active,2024-06-01
+TXMP-000023,Corporate Bond Interest,SYSTEM,bank,payment_description,contains,allutatud võlakiri,,BOND_INT,3,Active,2024-06-01
+TXMP-000024,Tech Stock Buy,SYSTEM,secu,ticker,equals,MSFT,true,TECH_BUY,1,Active,2024-06-01
+TXMP-000025,Tech Stock Buy Adobe,SYSTEM,secu,ticker,equals,ADBE,true,TECH_BUY,1,Active,2024-06-01
+TXMP-000026,Tech Stock Buy Micron,SYSTEM,secu,ticker,equals,MU,true,TECH_BUY,1,Active,2024-06-01
+TXMP-000027,Commodity Stock Buy,SYSTEM,secu,ticker,equals,NEM,true,COMM_BUY,1,Active,2024-06-01
+TXMP-000028,Security Stock Buy,SYSTEM,secu,ticker,equals,CRWD,true,TECH_BUY,1,Active,2024-06-01
+TXMP-000029,Local Bond Purchase,SYSTEM,secu,ticker,startsWith,BIGB,true,LOCAL_BOND,1,Active,2024-06-01
+TXMP-000030,Bank Bond Purchase,SYSTEM,secu,ticker,startsWith,HLMBK,true,BANK_BOND,1,Active,2024-06-01
+TXMP-000031,Swedbank Interest,CPT0355,bank,other_side_name,contains,GENESIS,,INT_INCOME,2,Active,2024-06-01
+TXMP-000032,SEB Securities Transaction,CPT0356,bank,payment_description,contains,Securities,,SEC_TRANS,2,Active,2024-06-01
+TXMP-000033,COOP Bank Transfer,CPT0357,bank,other_side_bic,startsWith,EKRDEE,true,BANK_TRANS,2,Active,2024-06-01
+TXMP-000034,Luminor Investment,CPT0358,bank,payment_description,contains,investment,,INV_TRANS,2,Active,2024-06-01
+TXMP-000035,Customer Loan Interest,SYSTEM,bank,reference_number,contains,ID-000001,,CUST_INT,3,Active,2024-06-01
+TXMP-000036,LHV Equity Buy Orders,CPT0384,secu,type,equals,ost,,EQ_BUY,2,Active,2024-06-01
+TXMP-000037,LHV Equity Sell Orders,CPT0384,secu,type,equals,müük,,EQ_SELL,2,Active,2024-06-01
+TXMP-000038,LHV Stock Split In,CPT0384,secu,type,equals,split+,,SPLIT_IN,2,Active,2024-06-01
+TXMP-000039,LHV Stock Split Out,CPT0384,secu,type,equals,split-,,SPLIT_OUT,2,Active,2024-06-01
+TXMP-000040,Meta Platforms Buy,SYSTEM,secu,ticker,equals,META,true,TECH_BUY,1,Active,2024-06-01
+TXMP-000041,NVIDIA Buy,SYSTEM,secu,ticker,equals,NVDA,true,TECH_BUY,1,Active,2024-06-01
+TXMP-000042,SuperMicro Buy,SYSTEM,secu,ticker,equals,SMCI,true,TECH_BUY,1,Active,2024-06-01
+TXMP-000043,Illumina Buy,SYSTEM,secu,ticker,equals,ILMN,true,TECH_BUY,1,Active,2024-06-01
+TXMP-000044,Fluence Energy Buy,SYSTEM,secu,ticker,equals,FLNC,true,TECH_BUY,1,Active,2024-06-01
+TXMP-000045,Hyliion Buy,SYSTEM,secu,ticker,equals,HYLN,true,TECH_BUY,1,Active,2024-06-01
+TXMP-000046,LHV Group Buy,SYSTEM,secu,ticker,equals,LHV1T,true,EQ_BUY,1,Active,2024-06-01
+TXMP-000047,Inbank Bond Purchase,SYSTEM,secu,ticker,startsWith,INBB,true,LOCAL_BOND,1,Active,2024-06-01

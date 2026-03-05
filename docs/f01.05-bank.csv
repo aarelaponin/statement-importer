@@ -1,0 +1,121 @@
+SrcTp,Status,CP,AsClass,StDate,TrxDate,BAmount (€),OrAmount,TAmount,Fee,AsBsCcy,IntTp,D/C,Desc,Origin
+Bank,enriched,LHV-EE,,,2024-06-20,2035.86,2035.86,2035.86,,,INT_INCOME,C,payment_description: Leping 1314/2020 laenuosa ja intress | other_side_name: RAKVERE KARMELI KOGUDUS | other_side_bic: EEUHEE2XXXX | other_side_account: EE171010502001278002,auto
+Bank,enriched,LHV-EE,,,2024-07-18,-15.89,-17.56,-17.56,,,COMM_FEE,D,payment_description: Securities commission fee (CRWD),auto
+Bank,enriched,LHV-EE,,,2024-06-27,-1.37,-1.50,-1.50,,,CASH_OUT,D,payment_description: Income tax withheld (META) (27.06.2024),auto
+Bank,manual_review,LHV-EE,,,2024-06-28,15.00,15.00,15.00,,,BOND_INT,C,payment_description: Interest (INBB060029A),auto
+Bank,enriched,LHV-EE,,,2024-07-19,5000.00,5000.00,5000.00,,,CASH_IN,C,"payment_description: Laenu tagastus, leping 123003 Lisa 2 | other_side_name: PTV Haldus OÜ | other_side_bic: LHVBEE22XXX | other_side_account: EE087700771001909756",auto
+Bank,manual_review,LHV-EE,,,2024-07-02,-191.83,-191.83,-191.83,,,CASH_OUT,D,payment_description: Täiteasi nr 027/2023/518 | other_side_name: Kohtutäitur Risto Sepp | other_side_bic: EEUHEE2XXXX | other_side_account: EE531010010124373017,auto
+Bank,enriched,LHV-EE,,,2024-06-28,74.29,81.25,81.25,,,DIV_INCOME,C,payment_description: Dividends (NEM),auto
+Bank,manual_review,LHV-EE,,,2024-06-27,-2000.00,-2000.00,-2000.00,,,CASH_OUT,D,payment_description: Tagastus vastavalt avaldusele #211 | other_side_name: Kaljo Investeeringud OÜ | other_side_bic: HABAEE2XXXX | other_side_account: EE762200221041122124,auto
+Bank,enriched,LHV-EE,,,2024-07-11,-14.38,-15.85,-15.85,,,COMM_FEE,D,payment_description: Securities commission fee (ILMN),auto
+Bank,enriched,LHV-EE,,,2024-07-18,-8.91,-9.84,-9.84,,,COMM_FEE,D,payment_description: Securities commission fee (HYLN),auto
+Bank,paired,LHV-EE,,,2024-07-18,11359,12550.56,12550.56,,,SEC_SELL,C,payment_description: Securities sell (CRWD),auto
+Bank,enriched,LHV-EE,,,2024-07-01,2231.71,2231.71,2231.71,,,INT_INCOME,C,payment_description: Intress vastavalt lepingule: 2231.71 | other_side_name: Hüpoteeklaen AS | other_side_bic: LHVBEE22XXX | other_side_account: EE187700771001342999,auto
+Bank,manual_review,LHV-EE,,,2024-06-05,47.61,47.61,47.61,,,INT_INCOME,C,"payment_description: Account interest EE117700771003603322, 01.05.2024 - 31.05.2024, interest rate 1.00%.",auto
+Bank,enriched,LHV-EE,,,2024-07-02,250.00,250.00,250.00,,,CASH_IN,C,payment_description: ARVE nr. 410 | other_side_name: PTV Haldus OÜ | other_side_bic: LHVBEE22XXX | other_side_account: EE087700771001909756,auto
+Bank,enriched,LHV-EE,,,2024-07-30,-11.55,-12.84,-12.84,,,COMM_FEE,D,payment_description: Securities commission fee (CRWD),auto
+Bank,paired,LHV-EE,,,2024-07-25,19305.32,21425.04,21425.04,,,SEC_SELL,C,payment_description: Securities sell (ADBE),auto
+Bank,paired,LHV-EE,,,2024-06-07,-2123.70,-2123.70,-2123.70,,,SEC_BUY,D,payment_description: Securities buy (HLMBK095034FA),auto
+Bank,enriched,LHV-EE,,,2024-06-30,500.00,500.00,500.00,,,CASH_IN,C,payment_description: 107-2017 | other_side_name: ANTSLA EKB KOGUDUS | other_side_bic: EEUHEE2XXXX | other_side_account: EE911010402011464003,auto
+Bank,manual_review,LHV-EE,,,2024-06-26,-649.04,-649.04,-649.04,,,CASH_OUT,D,payment_description: Arve nr 3254 tasumine | other_side_name: Aktsiaselts IMG Konsultant | other_side_bic: LHVBEE22XXX | other_side_account: EE657700771004390087,auto
+Bank,enriched,LHV-EE,,,2024-07-24,10.38,11.50,11.50,,,DIV_INCOME,C,payment_description: Dividends (MU),auto
+Bank,enriched,LHV-EE,,,2024-06-03,-11.21,-12.16,-12.16,,,COMM_FEE,D,payment_description: Securities commission fee (ADBE),auto
+Bank,enriched,LHV-EE,,,2024-07-19,83.84,83.84,83.84,,,INT_INCOME,C,payment_description: Laenuleping 123003 intress | other_side_name: PTV Haldus OÜ | other_side_bic: LHVBEE22XXX | other_side_account: EE087700771001909756,auto
+Bank,enriched,LHV-EE,,,2024-07-19,-9.74,-9.74,-9.74,,,COMM_FEE,D,payment_description: Securities commission fee (INBB055031A),auto
+Bank,paired,LHV-EE,,,2024-06-25,11223.09,12250.00,12250.00,,,SEC_SELL,C,payment_description: Securities sell (NVDA),auto
+Bank,paired,LHV-EE,,,2024-07-19,-1872.42,-1872.42,-1872.42,,,SEC_BUY,D,payment_description: Securities buy (INBB055031A),auto
+Bank,manual_review,LHV-EE,,,2024-07-15,-26.76,-26.76,-26.76,,,CASH_OUT,D,"payment_description: Portfolio safekeeping fee, 06-2024",auto
+Bank,enriched,LHV-EE,,,2024-07-23,74.11,74.11,74.11,,,CASH_IN,C,payment_description: makse | other_side_name: CHRISTOPHER ALANGO | other_side_bic: HABAEE2XXXX | other_side_account: EE042200221015329568,auto
+Bank,paired,LHV-EE,,,2024-07-18,2271.7,2510.00,2510.00,,,SEC_SELL,C,payment_description: Securities sell (HYLN),auto
+Bank,enriched,LHV-EE,,,2024-06-06,-9,-9.78,-9.78,,,COMM_FEE,D,payment_description: Securities commission fee (FLNC),auto
+Bank,manual_review,LHV-EE,,,2024-07-09,-35000.00,-35000.00,-35000.00,,,CASH_OUT,D,payment_description: #217 tagastus | other_side_name: EESTI EVANGEELIUMI KRISTLASTE JA BAPTISTIDE KOGUDUSTE LIIT | other_side_bic: HABAEE2XXXX | other_side_account: EE572200001120064569,auto
+Bank,enriched,LHV-EE,,,2024-06-27,9.15,10.00,10.00,,,DIV_INCOME,C,payment_description: Dividends (META),auto
+Bank,paired,LHV-EE,,,2024-07-25,10090.93,11198.91,11198.91,,,SEC_SELL,C,payment_description: Securities sell (MU),auto
+Bank,enriched,LHV-EE,,,2024-06-21,178.36,178.36,178.36,,,INT_INCOME,C,payment_description: Lapõnin intressid | other_side_name: AARE LAPÕNIN | other_side_bic: HABAEE2XXXX | other_side_account: EE652200001101808346,auto
+Bank,enriched,LHV-EE,,,2024-06-03,8011.57,8690.15,8690.15,,,SEC_SELL,C,payment_description: Securities sell (ADBE),auto
+Bank,manual_review,LHV-EE,,,2024-07-03,-8352.06,-8352.06,-8352.06,,,INT_EXPENSE,D,payment_description: #218 intressimakse 2Q24 lepingute alusel | other_side_name: UGR VARAD OÜ | other_side_bic: HABAEE2XXXX | other_side_account: EE142200221010695116,auto
+Bank,manual_review,LHV-EE,,,2024-07-03,-4674.66,-4674.66,-4674.66,,,CASH_OUT,D,payment_description: Intrest 2Q24 C.243/23 | other_side_name: European Baptist Federation | other_side_bic: GENODE51BH2 | other_side_account: DE64500921000000171700,auto
+Bank,enriched,LHV-EE,,,2024-07-01,1.83,2.00,2.00,,,DIV_INCOME,C,payment_description: Dividends (NVDA),auto
+Bank,manual_review,LHV-EE,,,2024-06-21,-7500.00,-7500.00,-7500.00,,,ASSET_RETURN,D,payment_description: Varade tagastus avalduse alusel #228 | other_side_name: OÜ Kuusikaru | other_side_bic: LHVBEE22XXX | other_side_account: EE667700771001248239,auto
+Bank,enriched,LHV-EE,,,2024-07-31,2269.31,2269.31,2269.31,,,INT_INCOME,C,payment_description: Intress vastavalt lepingule: 2269.31 | other_side_name: Hüpoteeklaen AS | other_side_bic: LHVBEE22XXX | other_side_account: EE187700771001342999,auto
+Bank,manual_review,LHV-EE,,,2024-07-26,-100000.00,-100000.00,-100000.00,,,LOAN_PAYMENT,D,payment_description: Leping 315001 laenu tagasimakse | other_side_name: ASKEMBLA ASSET MANAGEMENT OÜ | other_side_bic: HABAEE2XXXX | other_side_account: EE642200221028473540,auto
+Bank,enriched,LHV-EE,,,2024-06-25,-15.71,-17.15,-17.15,,,COMM_FEE,D,payment_description: Securities commission fee (NVDA),auto
+Bank,manual_review,LHV-EE,,,2024-07-22,777.51,861.25,861.25,,,CASH_IN,C,"payment_description: Currency exchange (EUR -> USD, exchange rate 1.068380)",auto
+Bank,enriched,LHV-EE,,,2024-06-20,43409.52,43409.52,43409.52,,,DIV_INCOME,C,payment_description: Hüpoteeklaen AS Dividendid | other_side_name: Hüpoteeklaen AS | other_side_bic: LHVBEE22XXX | other_side_account: EE707700771009532743,auto
+Bank,enriched,LHV-EE,,,2024-07-10,45000.00,45000.00,45000.00,,,CASH_IN,C,payment_description: Loan | other_side_name: PR & M INVESTMENTS OÜ | other_side_bic: HABAEE2XXXX | other_side_account: EE422200221084698725,auto
+Bank,enriched,LHV-EE,,,2024-07-05,393.03,393.03,393.03,,,LOAN_PAYMENT,C,payment_description: Laenu tagasimakse | other_side_name: EEKBKTE LIIDU KEHRA KOGUDUS | other_side_bic: HABAEE2XXXX | other_side_account: EE372200001120056878,auto
+Bank,enriched,LHV-EE,,,2024-07-31,1867.43,1867.43,1867.43,,,INT_INCOME,C,payment_description: Intress vastavalt lepingule: 1867.43 | other_side_name: Hüpoteeklaen AS | other_side_bic: LHVBEE22XXX | other_side_account: EE187700771001342999,auto
+Bank,enriched,LHV-EE,,,2024-06-27,-18.2,-19.88,-19.88,,,COMM_FEE,D,payment_description: Securities commission fee (MU),auto
+Bank,enriched,LHV-EE,,,2024-07-25,-11.86,-13.16,-13.16,,,COMM_FEE,D,payment_description: Securities commission fee (META),auto
+Bank,enriched,LHV-EE,,,2024-06-28,2333.34,2333.34,2333.34,,,INT_EXPENSE,C,payment_description: Inclusion OÜ (Planet42) - interest payment | other_side_name: INCLUSION OÜ | other_side_bic: HABAEE2XXXX | other_side_account: EE042200221067528760,auto
+Bank,manual_review,LHV-EE,,,2024-07-03,-3000.00,-3000.00,-3000.00,,,ASSET_RETURN,D,payment_description: Return of assets #234 | other_side_name: Tuuletar OÜ | other_side_bic: HABAEE2XXXX | other_side_account: EE922200221038581503,auto
+Bank,manual_review,LHV-EE,,,2024-07-03,-3172.49,-3172.49,-3172.49,,,CASH_OUT,D,payment_description: Return of interest #239 | other_side_name: Vastglobe OÜ | other_side_bic: LHVBEE22XXX | other_side_account: EE197700771005984722,auto
+Bank,enriched,LHV-EE,,,2024-06-14,17.28,18.75,18.75,,,DIV_INCOME,C,payment_description: Dividends (MSFT),auto
+Bank,enriched,LHV-EE,,,2024-07-16,170000.00,170000.00,170000.00,,,CASH_IN,C,payment_description: Return loan principal | other_side_name: Balti turu teeninduse OÜ | other_side_bic: LHVBEE22XXX | other_side_account: EE497700771000651704,auto
+Bank,manual_review,LHV-EE,,,2024-07-05,0.30,0.30,0.30,,,INT_INCOME,C,"payment_description: Account interest EE117700771003603322, 01.06.2024 - 30.06.2024, interest rate 0.01%.",auto
+Bank,enriched,LHV-EE,,,2024-06-07,-10.24,-10.24,-10.24,,,COMM_FEE,D,payment_description: Securities commission fee (HLMBK095034FA),auto
+Bank,enriched,LHV-EE,,,2024-06-20,-9.34,-10.15,-10.15,,,COMM_FEE,D,payment_description: Securities commission fee (NEM),auto
+Bank,enriched,LHV-EE,,,2024-07-04,141.78,141.78,141.78,,,INT_INCOME,C,payment_description: Intressid leping 110403 | other_side_name: Osaühing QY Holding | other_side_bic: LHVBEE22XXX | other_side_account: EE427700771004390016,auto
+Bank,manual_review,LHV-EE,,,2024-07-03,-2144.11,-2144.11,-2144.11,,,INT_EXPENSE,D,payment_description: Intressimakse 2Q2024 | other_side_name: OÜ HJR Investeeringud | other_side_bic: HABAEE2XXXX | other_side_account: EE832200221023652104,auto
+Bank,manual_review,LHV-EE,,,2024-07-15,-5.89,-5.89,-5.89,,,CASH_OUT,D,payment_description: VAT (22%),auto
+Bank,enriched,LHV-EE,,,2024-07-22,2035.86,2035.86,2035.86,,,INT_INCOME,C,payment_description: Leping 1314/2020 laenuosa ja intress | other_side_name: RAKVERE KARMELI KOGUDUS | other_side_bic: EEUHEE2XXXX | other_side_account: EE171010502001278002,auto
+Bank,enriched,LHV-EE,,,2024-07-29,-8.8,-9.77,-9.77,,,COMM_FEE,D,payment_description: Securities commission fee (FLNC),auto
+Bank,enriched,LHV-EE,,,2024-07-08,60.21,60.21,60.21,,,CASH_IN,C,payment_description: 027/2023/518 Tagastamine John Doherty | other_side_name: SEPP RISTO | other_side_bic: EEUHEE2XXXX | other_side_account: EE531010010124373017,auto
+Bank,enriched,LHV-EE,,,2024-07-23,5123.43,5123.43,5123.43,,,INT_INCOME,C,payment_description: Laenuintressid kuni 30.06.2024 | other_side_name: EEKBL - VALDUSTE OÜ | other_side_bic: HABAEE2XXXX | other_side_account: EE562200001120273622,auto
+Bank,paired,LHV-EE,,,2024-07-25,8468.01,9397.80,9397.80,,,SEC_SELL,C,payment_description: Securities sell (META),auto
+Bank,enriched,LHV-EE,,,2024-07-18,4535.04,4535.04,4535.04,,,INT_EXPENSE,C,payment_description: Interest payment to 16.07.2024 - laenuleping 122201/21 - btt konto 2811 (last payment) | other_side_name: Balti turu teeninduse OÜ | other_side_bic: LHVBEE22XXX | other_side_account: EE497700771000651704,auto
+Bank,paired,LHV-EE,,,2024-06-07,-8050.00,-8050.00,-8050.00,,,SEC_BUY,D,payment_description: Securities buy (LHV1T),auto
+Bank,enriched,LHV-EE,,,2024-07-25,-27.03,-30.00,-30.00,,,COMM_FEE,D,payment_description: Securities commission fee (ADBE),auto
+Bank,enriched,LHV-EE,,,2024-07-18,-47.27,-47.27,-47.27,,,COMM_FEE,D,payment_description: Securities commission fee (BIGB080033A),auto
+Bank,enriched,LHV-EE,,,2024-07-11,5000.00,5000.00,5000.00,,,CASH_IN,C,payment_description: Loan | other_side_name: PR & M INVESTMENTS OÜ | other_side_bic: HABAEE2XXXX | other_side_account: EE422200221084698725,auto
+Bank,enriched,LHV-EE,,,2024-06-14,-2.59,-2.81,-2.81,,,CASH_OUT,D,payment_description: Income tax withheld (MSFT) (14.06.2024),auto
+Bank,paired,LHV-EE,,,2024-07-18,-20635.56,-20635.56,-20635.56,,,SEC_BUY,D,payment_description: Securities buy (BIGB080033A),auto
+Bank,paired,LHV-EE,,,2024-06-27,-13000.09,-14200.00,-14200.00,,,SEC_BUY,D,payment_description: Securities buy (MU),auto
+Bank,enriched,LHV-EE,,,2024-07-19,2482.83,2482.83,2482.83,,,CASH_IN,C,payment_description: laenu osaline tagastus | other_side_name: Monrax Ekspert UÜ | other_side_bic: LHVBEE22XXX | other_side_account: EE067700771002283921,auto
+Bank,enriched,LHV-EE,,,2024-06-10,490.72,490.72,490.72,,,INT_EXPENSE,C,payment_description: Laenulepingu makse. | other_side_name: PALMIK JOHANNES | other_side_bic: EEUHEE2XXXX | other_side_account: EE471010011682568224,auto
+Bank,enriched,LHV-EE,,,2024-06-21,688.96,750.00,750.00,,,DIV_INCOME,C,payment_description: Dividends (SBLK),auto
+Bank,manual_review,LHV-EE,,,2024-07-05,43.37,43.37,43.37,,,INT_INCOME,C,"payment_description: Account interest EE117700771003603322, 01.06.2024 - 30.06.2024, interest rate 1.00%.",auto
+Bank,enriched,LHV-EE,,,2024-07-01,-0.27,-0.30,-0.30,,,CASH_OUT,D,payment_description: Income tax withheld (NVDA) (01.07.2024),auto
+Bank,manual_review,LHV-EE,,,2024-07-22,-806.13,-806.13,-806.13,,,CASH_OUT,D,"payment_description: Currency exchange (EUR -> USD, exchange rate 1.068380)",auto
+Bank,enriched,LHV-EE,,,2024-07-24,-1.56,-1.73,-1.73,,,CASH_OUT,D,payment_description: Income tax withheld (MU) (24.07.2024),auto
+Bank,enriched,LHV-EE,,,2024-07-31,5072.14,5072.14,5072.14,,,INT_INCOME,C,payment_description: Intress vastavalt lepingule: 5072.14 | other_side_name: Hüpoteeklaen AS | other_side_bic: LHVBEE22XXX | other_side_account: EE187700771001342999,auto
+Bank,manual_review,LHV-EE,,,2024-06-19,2.27,2.27,2.27,,,BOND_INT,C,payment_description: Interest (IUTE110026A),auto
+Bank,paired,LHV-EE,,,2024-06-20,-6675.17,-7257.25,-7257.25,,,SEC_BUY,D,payment_description: Securities buy (NEM),auto
+Bank,enriched,LHV-EE,,,2024-06-12,150.44,150.44,150.44,,,INT_EXPENSE,C,payment_description: Laenulepingu 1315-2020 osamakse | other_side_name: EEKBKTE LIIDU PALADE PRIIKOGUDUS | other_side_bic: HABAEE2XXXX | other_side_account: EE602200221028469538,auto
+Bank,manual_review,LHV-EE,,,2024-07-09,-60.00,-60.00,-60.00,,,CASH_OUT,D,"payment_description: Mango e60, 229 | other_side_name: Mango Invest OÜ | other_side_bic: RIKOEE22XXX | other_side_account: EE161700017004567419",auto
+Bank,enriched,LHV-EE,,,2024-07-04,646.11,646.11,646.11,,,INT_INCOME,C,"payment_description: Intressid, laen 112701 | other_side_name: OÜ GENESIS INTELLIGENT GROWTH | other_side_bic: HABAEE2XXXX | other_side_account: EE902200221068943218",auto
+Bank,manual_review,LHV-EE,,,2024-07-27,-91800.00,-91800.00,-91800.00,,,LOAN_PAYMENT,D,payment_description: Leping 315001 laenu tagasimakse | other_side_name: ASKEMBLA ASSET MANAGEMENT OÜ | other_side_bic: HABAEE2XXXX | other_side_account: EE642200221028473540,auto
+Bank,enriched,LHV-EE,,,2024-07-25,40000.00,40000.00,40000.00,,,INV_INCOME,C,payment_description: Adverta Group - Inbank investment | other_side_name: ADVERTA GRUPP OÜ | other_side_bic: RIKOEE22XXX | other_side_account: EE341700017002830601,auto
+Bank,enriched,LHV-EE,,,2024-06-28,1232.88,1232.88,1232.88,,,INT_INCOME,C,payment_description: Arve intressid 06.2024 tasumine. | other_side_name: DE Kodu OÜ | other_side_bic: LHVBEE22XXX | other_side_account: EE307700771001984535,auto
+Bank,manual_review,LHV-EE,,,2024-07-03,-4861.64,-4861.64,-4861.64,,,INT_EXPENSE,D,payment_description: Leping 4/15 1. portfelli intressimakse | other_side_name: EESTI EVANGEELIUMI KRISTLASTE JA BAPTISTIDE KOGUDUSTE LIIT | other_side_bic: HABAEE2XXXX | other_side_account: EE572200001120064569,auto
+Bank,manual_review,LHV-EE,,,2024-06-05,0.31,0.31,0.31,,,INT_INCOME,C,"payment_description: Account interest EE117700771003603322, 01.05.2024 - 31.05.2024, interest rate 0.01%.",auto
+Bank,manual_review,LHV-EE,,,2024-07-04,-4500.00,-4500.00,-4500.00,,,ASSET_RETURN,D,payment_description: Return of assets #233 | other_side_name: John Doherty | other_side_bic: AIBKIE2DXXX | other_side_account: IE78AIBK93239606303073,auto
+Bank,paired,LHV-EE,,,2024-06-06,-3156.88,-3429.00,-3429.00,,,SEC_BUY,D,payment_description: Securities buy (FLNC),auto
+Bank,manual_review,LHV-EE,,,2024-06-15,-25.61,-25.61,-25.61,,,CASH_OUT,D,"payment_description: Portfolio safekeeping fee, 05-2024",auto
+Bank,manual_review,LHV-EE,,,2024-06-15,-5.63,-5.63,-5.63,,,CASH_OUT,D,payment_description: VAT (22%),auto
+Bank,manual_review,LHV-EE,,,2024-07-04,-2325.00,-2325.00,-2325.00,,,CASH_OUT,D,payment_description: Tagastus vastavalt avaldusele #214 | other_side_name: Osaühing QY Holding | other_side_bic: LHVBEE22XXX | other_side_account: EE427700771004390016,auto
+Bank,manual_review,LHV-EE,,,2024-06-21,-5000.00,-5000.00,-5000.00,,,CASH_OUT,D,"payment_description: Laenu avamine, leping 123003 Lisa 2 | other_side_name: PTV Haldus OÜ | other_side_bic: LHVBEE22XXX | other_side_account: EE087700771001909756",auto
+Bank,enriched,LHV-EE,,,2024-07-31,1273.97,1273.97,1273.97,,,INT_INCOME,C,payment_description: Arve intressid 07.2024 tasumine. | other_side_name: DE Kodu OÜ | other_side_bic: LHVBEE22XXX | other_side_account: EE307700771001984535,auto
+Bank,enriched,LHV-EE,,,2024-07-21,500.00,500.00,500.00,,,CASH_IN,C,payment_description: makse | other_side_name: CHRISTOPHER ALANGO | other_side_bic: HABAEE2XXXX | other_side_account: EE042200221015329568,auto
+Bank,enriched,LHV-EE,,,2024-07-23,2400.00,2400.00,2400.00,,,CASH_IN,C,payment_description: laenu osaline tagastus | other_side_name: Monrax Ekspert UÜ | other_side_bic: LHVBEE22XXX | other_side_account: EE067700771002283921,auto
+Bank,manual_review,LHV-EE,,,2024-06-19,-1600.00,-1600.00,-1600.00,,,MGMT_FEE,D,payment_description: Vastavalt halduslepingule | other_side_name: OÜ GENESIS FIXED INCOME | other_side_bic: HABAEE2XXXX | other_side_account: EE142200221021584821,auto
+Bank,manual_review,LHV-EE,,,2024-07-28,-4799.98,-4799.98,-4799.98,,,INT_INCOME,D,payment_description: Leping 315001 intressid | other_side_name: ASKEMBLA ASSET MANAGEMENT OÜ | other_side_bic: HABAEE2XXXX | other_side_account: EE642200221028473540,auto
+Bank,manual_review,LHV-EE,,,2024-06-21,-2300.00,-2300.00,-2300.00,,,CASH_OUT,D,payment_description: IS leping 240619 | other_side_name: FiscalAdmin OÜ | other_side_bic: HABAEE2XXXX | other_side_account: EE382200221062499959,auto
+Bank,enriched,LHV-EE,,,2024-07-01,5001.08,5001.08,5001.08,,,INT_INCOME,C,payment_description: Intress vastavalt lepingule: 5001.08 | other_side_name: Hüpoteeklaen AS | other_side_bic: LHVBEE22XXX | other_side_account: EE187700771001342999,auto
+Bank,paired,LHV-EE,,,2024-07-11,-10269.49,-11318.00,-11318.00,,,SEC_BUY,D,payment_description: Securities buy (ILMN),auto
+Bank,enriched,LHV-EE,,,2024-06-21,580.68,580.68,580.68,,,CASH_IN,C,payment_description: makse | other_side_name: CHRISTOPHER ALANGO | other_side_bic: HABAEE2XXXX | other_side_account: EE042200221015329568,auto
+Bank,enriched,LHV-EE,,,2024-06-28,-11.15,-12.19,-12.19,,,CASH_OUT,D,payment_description: Income tax withheld (NEM) (28.06.2024),auto
+Bank,enriched,LHV-EE,,,2024-07-26,500.00,500.00,500.00,,,CASH_IN,C,payment_description: 107-2017 | other_side_name: ANTSLA EKB KOGUDUS | other_side_bic: EEUHEE2XXXX | other_side_account: EE911010402011464003,auto
+Bank,enriched,LHV-EE,,,2024-07-25,-14.12,-15.67,-15.67,,,COMM_FEE,D,payment_description: Securities commission fee (MU),auto
+Bank,enriched,LHV-EE,,,2024-07-01,1807.19,1807.19,1807.19,,,INT_INCOME,C,payment_description: Intress vastavalt lepingule: 1807.19 | other_side_name: Hüpoteeklaen AS | other_side_bic: LHVBEE22XXX | other_side_account: EE187700771001342999,auto
+Bank,enriched,LHV-EE,,,2024-07-12,150.44,150.44,150.44,,,INT_EXPENSE,C,payment_description: Laenulepingu 1315-2020 osamakse | other_side_name: EEKBKTE LIIDU PALADE PRIIKOGUDUS | other_side_bic: HABAEE2XXXX | other_side_account: EE602200221028469538,auto
+Bank,enriched,LHV-EE,,,2024-06-05,393.03,393.03,393.03,,,LOAN_PAYMENT,C,payment_description: Laenu tagasimakse | other_side_name: EEKBKTE LIIDU KEHRA KOGUDUS | other_side_bic: HABAEE2XXXX | other_side_account: EE372200001120056878,auto
+Bank,enriched,LHV-EE,,,2024-06-18,-13.12,-14.23,-14.23,,,COMM_FEE,D,payment_description: Securities commission fee (ADBE),auto
+Bank,paired,LHV-EE,,,2024-06-18,-9375.56,-10167.80,-10167.80,,,SEC_BUY,D,payment_description: Securities buy (ADBE),auto
+Bank,manual_review,LHV-EE,,,2024-07-03,-10445.55,-10445.55,-10445.55,,,INT_EXPENSE,D,payment_description: Interest payment 2Q2024 C.231 | other_side_name: Baptistische Theologische Hochschule Verein | other_side_bic: UBSWCHZH88C | other_side_account: CH720029329380766362R,auto
+Bank,paired,LHV-EE,,,2024-07-29,-3712.29,-4122.50,-4122.50,,,SEC_BUY,D,payment_description: Securities buy (FLNC),auto
+Bank,manual_review,LHV-EE,,,2024-07-15,-1000.00,-1000.00,-1000.00,,,ASSET_RETURN,D,payment_description: Return of assets #238 | other_side_name: OÜ Optimum Projekt | other_side_bic: HABAEE2XXXX | other_side_account: EE872200221013750757,auto
+Bank,paired,LHV-EE,,,2024-07-30,-8246.83,-9169.65,-9169.65,,,SEC_BUY,D,payment_description: Securities buy (CRWD),auto
+Bank,enriched,LHV-EE,,,2024-07-04,1726.03,1726.03,1726.03,,,INT_INCOME,C,payment_description: Intressid leping 110401 | other_side_name: Osaühing QY Holding | other_side_bic: LHVBEE22XXX | other_side_account: EE427700771004390016,auto
+Bank,manual_review,LHV-EE,,,2024-07-03,-2642.74,-2642.74,-2642.74,,,INT_INCOME,D,payment_description: Intressid 2Q24 | other_side_name: IMG Numeri OÜ | other_side_bic: LHVBEE22XXX | other_side_account: EE497700771004166208,auto
+Bank,manual_review,LHV-EE,,,2024-07-03,-822.74,-822.74,-822.74,,,INT_EXPENSE,D,payment_description: Intressimakse 2Q24 | other_side_name: EESTI EKB KOGUDUSTE LIIT | other_side_bic: EEUHEE2XXXX | other_side_account: EE341010152001813008,auto
