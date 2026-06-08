@@ -153,15 +153,15 @@ public class StatementImporter extends DefaultApplicationPlugin {
                 throw new IllegalStateException("Statement record not found: " + recordId);
             }
 
-            // Read fields directly from the form record (no workflow variables needed!)
+            // The operator supplies only account_type + the uploaded file. All statement
+            // metadata — period (from/to dates) and account number — is derived from the
+            // file itself after parsing (see deriveFileMetadata()), so the operator never
+            // hand-keys data that is already present in the statement.
             String accountType = statementRow.getProperty("account_type");
-            String bank = statementRow.getProperty("bank");
-            String fromDate = statementRow.getProperty("from_date");
-            String toDate = statementRow.getProperty("to_date");
             String fileName = statementRow.getProperty("statement_file");
 
             LogUtil.info(CLASS_NAME, "Loaded form data - accountType: " + accountType
-                + ", bank: " + bank + ", file: " + fileName);
+                + ", file: " + fileName);
 
             // Validate required fields
             if (accountType == null || accountType.isEmpty()) {
@@ -200,7 +200,16 @@ public class StatementImporter extends DefaultApplicationPlugin {
             List<String[]> allRows = StatementParser.parse(csvFile, format);
             LogUtil.info(CLASS_NAME, "Parsed " + allRows.size() + " rows from CSV");
 
-            // Step 9: De-duplication check
+            // Step 8b: Derive statement metadata from the file itself (operator no longer
+            // enters these). Bank rows carry the account IBAN at index 0 and a payment date
+            // at index 2; securities rows carry the value date at index 0 and no account.
+            FileMetadata meta = deriveFileMetadata(allRows, accountType);
+            String fromDate = meta.fromDate;
+            String toDate = meta.toDate;
+            LogUtil.info(CLASS_NAME, "Derived from file - period: " + fromDate + ".." + toDate
+                + ", account: " + meta.accountNumber);
+
+            // Step 9: De-duplication check (scoped by the derived statement period)
             DeduplicationResult dedupResult = DeduplicationChecker.check(
                 allRows, recordId, fromDate, toDate, accountType);
             List<String[]> newRows = dedupResult.getNonDuplicateRows();
@@ -215,8 +224,11 @@ public class StatementImporter extends DefaultApplicationPlugin {
             LogUtil.info(CLASS_NAME, "Inserted " + insertedCount + " rows into "
                 + mappingConfig.getTargetTable());
 
-            // Step 11: Update statement metadata
-            updateStatementMetadata(dao, recordId, allRows.size(), duplicateCount);
+            // Step 11: Update statement metadata (row counts + file-derived period/account
+            // + the statement bank BIC derived from the detected format, which enrichment
+            // uses to resolve the counterparty).
+            updateStatementMetadata(dao, recordId, allRows.size(), duplicateCount, meta,
+                    format.getStatementBankBic());
 
             // Step 12: Status IMPORTING → IMPORTED
             statusManager.transition(dao, EntityType.STATEMENT, recordId,
@@ -304,20 +316,113 @@ public class StatementImporter extends DefaultApplicationPlugin {
     }
 
     /**
-     * Updates the statement record with processing results metadata.
+     * Updates the statement record with processing results metadata, including the
+     * file-derived statement period (from/to dates) and account number. These were
+     * previously hand-entered by the operator; they are now read straight from the file.
      */
     private void updateStatementMetadata(FormDataDao dao, String recordId,
-                                          int rowCount, int duplicateCount) {
+                                          int rowCount, int duplicateCount,
+                                          FileMetadata meta, String bankBic) {
         FormRow row = new FormRow();
         row.setId(recordId);
         row.setProperty("row_count", String.valueOf(rowCount));
         row.setProperty("duplicate_count", String.valueOf(duplicateCount));
         row.setProperty("processing_timestamp",
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+        // The statement bank BIC is derived from the file format (operator no longer picks a
+        // bank). Enrichment's CounterpartyDeterminationStep reads this `bank` field to resolve
+        // the counterparty; leaving it blank sends every row to manual review.
+        if (bankBic != null && !bankBic.isEmpty()) {
+            row.setProperty("bank", bankBic);
+        }
+        // Only write derived values when present, so a sparse file never blanks them out.
+        if (meta != null) {
+            if (meta.fromDate != null && !meta.fromDate.isEmpty()) {
+                row.setProperty("from_date", meta.fromDate);
+            }
+            if (meta.toDate != null && !meta.toDate.isEmpty()) {
+                row.setProperty("to_date", meta.toDate);
+            }
+            if (meta.accountNumber != null && !meta.accountNumber.isEmpty()) {
+                row.setProperty("account_number", meta.accountNumber);
+            }
+        }
 
         FormRowSet rowSet = new FormRowSet();
         rowSet.add(row);
         dao.saveOrUpdate("bank_statement", "bank_statement", rowSet);
+    }
+
+    /**
+     * Lightweight holder for the statement metadata derived from the parsed file.
+     */
+    static final class FileMetadata {
+        final String fromDate;       // earliest date in the file (yyyy-MM-dd), or ""
+        final String toDate;         // latest date in the file (yyyy-MM-dd), or ""
+        final String accountNumber;  // account IBAN (bank statements only), or ""
+
+        FileMetadata(String fromDate, String toDate, String accountNumber) {
+            this.fromDate = fromDate;
+            this.toDate = toDate;
+            this.accountNumber = accountNumber;
+        }
+    }
+
+    /**
+     * Derives the statement period and account number from the parsed CSV rows so the
+     * operator never has to type data that is already in the file.
+     * <p>
+     * Column positions follow {@code MappingConfigurations}:
+     * <ul>
+     *   <li><b>bank</b>: index 0 = account number (IBAN), index 2 = payment date</li>
+     *   <li><b>securities</b>: index 0 = value date, no account number</li>
+     * </ul>
+     * Dates are stored in ISO {@code yyyy-MM-dd} form, so a plain string min/max yields
+     * the correct chronological range without parsing.
+     *
+     * @param rows        parsed CSV rows (each a String[] in source-column order)
+     * @param accountType "bank" or "secu"
+     * @return derived metadata; fields are "" when the file does not carry them
+     */
+    static FileMetadata deriveFileMetadata(List<String[]> rows, String accountType) {
+        boolean isBank = "bank".equals(accountType);
+        int dateIdx = isBank ? 2 : 0;       // bank: payment date; secu: value date
+        int accountIdx = isBank ? 0 : -1;   // bank: IBAN; secu: none
+
+        String minDate = null;
+        String maxDate = null;
+        String accountNumber = "";
+
+        if (rows != null) {
+            for (String[] r : rows) {
+                if (r == null) {
+                    continue;
+                }
+                if (dateIdx < r.length) {
+                    String d = trimOrEmpty(r[dateIdx]);
+                    if (!d.isEmpty()) {
+                        if (minDate == null || d.compareTo(minDate) < 0) {
+                            minDate = d;
+                        }
+                        if (maxDate == null || d.compareTo(maxDate) > 0) {
+                            maxDate = d;
+                        }
+                    }
+                }
+                if (accountNumber.isEmpty() && accountIdx >= 0 && accountIdx < r.length) {
+                    accountNumber = trimOrEmpty(r[accountIdx]);
+                }
+            }
+        }
+
+        return new FileMetadata(
+            minDate == null ? "" : minDate,
+            maxDate == null ? "" : maxDate,
+            accountNumber);
+    }
+
+    private static String trimOrEmpty(String s) {
+        return s == null ? "" : s.trim();
     }
 
     /**

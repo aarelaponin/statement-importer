@@ -262,7 +262,7 @@ public class ConsolidatedRowPersisterTest extends ConsolidationTestBase {
 
         assertNotNull("dateCreated should not be null", dateCreated);
         assertTrue("dateCreated should match yyyy-MM-dd HH:mm:ss",
-            dateCreated.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}"));
+            dateCreated.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}(\\.\\d+)?"));
         assertEquals("createdBy should be 'system'", "system", createdBy);
     }
 

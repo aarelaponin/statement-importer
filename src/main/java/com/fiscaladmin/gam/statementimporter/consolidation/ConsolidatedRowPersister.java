@@ -94,6 +94,9 @@ public class ConsolidatedRowPersister {
         LogUtil.info(CLASS_NAME, "Batch insert: " + rows.size() + " rows into " + targetTable);
 
         String now = getCurrentTimestamp();
+        // Timestamp columns must be bound as a real java.sql.Timestamp — setString sends a varchar,
+        // which MySQL coerces but PostgreSQL rejects ("column ... is of type timestamp ... varying").
+        Timestamp nowTs = new Timestamp(System.currentTimeMillis());
         int seqId = 0;
         int totalInserted = 0;
 
@@ -104,8 +107,12 @@ public class ConsolidatedRowPersister {
 
                 int paramIndex = 1;
                 for (String column : columnOrder) {
-                    String value = getColumnValue(row, column, statementId, statementRef, now, seqId);
-                    stmt.setString(paramIndex++, value);
+                    if ("dateCreated".equals(column) || "dateModified".equals(column)) {
+                        stmt.setTimestamp(paramIndex++, nowTs);
+                    } else {
+                        String value = getColumnValue(row, column, statementId, statementRef, now, seqId);
+                        stmt.setString(paramIndex++, value);
+                    }
                 }
 
                 stmt.addBatch();

@@ -10,6 +10,12 @@
 
 Preserve the bank transaction reference numbers (`Kande viide` / `c_transaction_reference`) through consolidation as a concatenated text field for traceability and audit. The consolidation algorithm itself (GROUP BY dimensions) must NOT be changed — it implements the business logic of grouping raw bank rows into meaningful customer-visible transactions.
 
+### 1.1 Design Principle: Single-Run, File-Bound
+
+The statement-importer is a **single-run, file-bound** plugin. It processes each statement file exactly once through the lifecycle: `NEW → IMPORTING → IMPORTED → CONSOLIDATING → CONSOLIDATED`. Once a statement reaches `CONSOLIDATED` status, the importer's work is complete and it does not revisit that statement.
+
+This is by design — the importer's job is to faithfully transfer data from external files into the GAM data model. It does not interpret, classify, or enrich transactions. That responsibility belongs entirely to the **rows-enrichment** plugin, which is re-runnable and can be invoked as many times as needed to progressively resolve transactions as master data becomes available. See rows-enrichment-spec.md §2.0 for the full re-runnability design.
+
 ---
 
 ## 2. Current State Analysis

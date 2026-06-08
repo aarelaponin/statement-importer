@@ -12,18 +12,34 @@ package com.fiscaladmin.gam.statementimporter.parser;
  */
 public enum Format {
 
-    LHV_BANK("bank", ',', "bank_account_trx"),
-    SWEDBANK("bank", ';', "bank_account_trx"),
-    SECURITIES("secu", ',', "sec_account_trx");
+    // The statementBankBic is the SWIFT/BIC of the institution that issued the file.
+    // It is intrinsic to the format (an LHV CSV is, by definition, an LHV statement) and is
+    // written to the statement's `bank` field so downstream enrichment can resolve the
+    // counterparty — CounterpartyDeterminationStep matches this BIC against counterparty_master.
+    // GAM's securities custodian is also LHV, so the securities format carries LHV's BIC.
+    LHV_BANK("bank", ',', "bank_account_trx", "LHVBEE22"),
+    SWEDBANK("bank", ';', "bank_account_trx", "HABAEE2X"),
+    SECURITIES("secu", ',', "sec_account_trx", "LHVBEE22");
 
     private final String accountType;
     private final char separator;
     private final String targetTable;
+    private final String statementBankBic;
 
-    Format(String accountType, char separator, String targetTable) {
+    Format(String accountType, char separator, String targetTable, String statementBankBic) {
         this.accountType = accountType;
         this.separator = separator;
         this.targetTable = targetTable;
+        this.statementBankBic = statementBankBic;
+    }
+
+    /**
+     * Returns the SWIFT/BIC of the bank that issued statements in this format.
+     * Written to the statement's {@code bank} field so enrichment can resolve the
+     * counterparty without the operator selecting a bank.
+     */
+    public String getStatementBankBic() {
+        return statementBankBic;
     }
 
     /**

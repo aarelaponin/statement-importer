@@ -171,7 +171,7 @@ public class RealCsvEndToEndTest {
         String firstDateCreated = getColumnValue("app_fd_bank_account_trx", "dateCreated", "c_transaction_id = '001'");
         assertNotNull("First row dateCreated should not be null", firstDateCreated);
         assertTrue("dateCreated should match yyyy-MM-dd HH:mm:ss",
-                firstDateCreated.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}"));
+                firstDateCreated.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}(\\.\\d+)?"));
 
         assertColumnEquals("app_fd_bank_account_trx", "createdBy", "c_transaction_id = '001'",
                 "system", "First row createdBy");

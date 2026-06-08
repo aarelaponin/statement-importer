@@ -81,7 +81,9 @@ public class RawTransactionPersister {
         LogUtil.info(CLASS_NAME, "Batch insert: " + rows.size() + " rows into " + config.getTargetTable());
 
         String sql = buildInsertSql(config);
-        String now = getCurrentTimestamp();
+        // dateCreated is a TIMESTAMP column. Bind a real java.sql.Timestamp — setString sends a
+        // varchar, which MySQL coerces but PostgreSQL rejects ("type timestamp ... is of type varying").
+        Timestamp nowTs = new Timestamp(System.currentTimeMillis());
 
         int seqId = 0;
         int totalInserted = 0;
@@ -105,7 +107,7 @@ public class RawTransactionPersister {
                 stmt.setString(paramIndex++, statementId);                    // c_statement_id
 
                 // Joget audit fields
-                stmt.setString(paramIndex++, now);          // dateCreated
+                stmt.setTimestamp(paramIndex++, nowTs);     // dateCreated (timestamp column)
                 stmt.setString(paramIndex++, CREATED_BY);   // createdBy
 
                 stmt.addBatch();

@@ -15,7 +15,10 @@ import java.util.List;
 /**
  * Base class for consolidation tests providing H2 database setup and helpers.
  * <p>
- * Uses H2 in MySQL mode for GROUP_CONCAT support.
+ * Uses H2 in MySQL mode. NOTE: the consolidation queries deliberately use the
+ * SQL-standard STRING_AGG (not MySQL's GROUP_CONCAT ... SEPARATOR), which H2
+ * supports natively in any mode and which matches production PostgreSQL. Verified
+ * to produce identical ordered output under H2 MODE=MySQL and MODE=PostgreSQL.
  * Creates all 4 tables:
  * <ul>
  *   <li>app_fd_bank_account_trx (source: raw bank transactions)</li>

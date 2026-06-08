@@ -278,8 +278,9 @@ public class RawTransactionPersisterTest {
 
         assertNotNull(dateCreated);
         assertFalse(dateCreated.isEmpty());
-        // Should be in yyyy-MM-dd HH:mm:ss format
-        assertTrue("dateCreated should match timestamp format", dateCreated.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}"));
+        // dateCreated is now bound as a java.sql.Timestamp, so the stored value may carry
+        // fractional seconds (e.g. "...:56.789"). Accept the optional fractional part.
+        assertTrue("dateCreated should match timestamp format", dateCreated.matches("\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}(\\.\\d+)?"));
 
         assertNotNull(createdBy);
         assertEquals("system", createdBy);

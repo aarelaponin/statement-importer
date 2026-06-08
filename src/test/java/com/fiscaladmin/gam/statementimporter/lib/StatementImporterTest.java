@@ -142,4 +142,81 @@ public class StatementImporterTest {
         assertEquals("bank_account_trx", Format.SWEDBANK.getTargetTable());
         assertEquals("sec_account_trx", Format.SECURITIES.getTargetTable());
     }
+
+    // ─────────────────────────────────────────────────────────────────
+    //  deriveFileMetadata — period + account number come from the file,
+    //  not from operator input.
+    // ─────────────────────────────────────────────────────────────────
+
+    /** Builds a bank row: index 0 = account (IBAN), index 2 = payment date. */
+    private static String[] bankRow(String iban, String paymentDate) {
+        String[] r = new String[18];
+        java.util.Arrays.fill(r, "");
+        r[0] = iban;
+        r[2] = paymentDate;
+        return r;
+    }
+
+    /** Builds a securities row: index 0 = value date (no account number). */
+    private static String[] secuRow(String valueDate) {
+        String[] r = new String[13];
+        java.util.Arrays.fill(r, "");
+        r[0] = valueDate;
+        return r;
+    }
+
+    @Test
+    public void deriveBankMetadataPicksMinMaxDatesAndAccount() {
+        java.util.List<String[]> rows = java.util.Arrays.asList(
+            bankRow("EE117700771003603322", "2024-06-05"),
+            bankRow("EE117700771003603322", "2024-06-01"),
+            bankRow("EE117700771003603322", "2024-06-28"));
+
+        StatementImporter.FileMetadata meta =
+            StatementImporter.deriveFileMetadata(rows, "bank");
+
+        assertEquals("2024-06-01", meta.fromDate);
+        assertEquals("2024-06-28", meta.toDate);
+        assertEquals("EE117700771003603322", meta.accountNumber);
+    }
+
+    @Test
+    public void deriveSecuMetadataUsesValueDateAndHasNoAccount() {
+        java.util.List<String[]> rows = java.util.Arrays.asList(
+            secuRow("2024-06-07"),
+            secuRow("2024-06-03"),
+            secuRow("2024-06-10"));
+
+        StatementImporter.FileMetadata meta =
+            StatementImporter.deriveFileMetadata(rows, "secu");
+
+        assertEquals("2024-06-03", meta.fromDate);
+        assertEquals("2024-06-10", meta.toDate);
+        assertEquals("", meta.accountNumber);
+    }
+
+    @Test
+    public void deriveMetadataIgnoresBlankDatesAndNullRows() {
+        java.util.List<String[]> rows = java.util.Arrays.asList(
+            bankRow("EE10", ""),            // blank date — ignored
+            null,                            // null row — skipped
+            bankRow("EE10", "2024-05-15"));
+
+        StatementImporter.FileMetadata meta =
+            StatementImporter.deriveFileMetadata(rows, "bank");
+
+        assertEquals("2024-05-15", meta.fromDate);
+        assertEquals("2024-05-15", meta.toDate);
+        assertEquals("EE10", meta.accountNumber);
+    }
+
+    @Test
+    public void deriveMetadataEmptyRowsYieldsEmptyStrings() {
+        StatementImporter.FileMetadata meta =
+            StatementImporter.deriveFileMetadata(java.util.Collections.emptyList(), "bank");
+
+        assertEquals("", meta.fromDate);
+        assertEquals("", meta.toDate);
+        assertEquals("", meta.accountNumber);
+    }
 }

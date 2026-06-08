@@ -63,7 +63,10 @@ public final class SecuConsolidationQuery {
         "  SUM(CAST(c_amount AS DECIMAL(15,2))) AS total_amount, " +
         "  SUM(CAST(c_fee AS DECIMAL(15,2))) AS total_fee, " +
         "  SUM(CAST(c_total_amount AS DECIMAL(15,2))) AS total_total_amount, " +
-        "  GROUP_CONCAT(c_reference ORDER BY c_transaction_id SEPARATOR ',') AS `references` " +
+        // STRING_AGG: portable across PostgreSQL (production) and H2 (tests).
+        // Alias deliberately avoids the reserved word "references" so no dialect-specific
+        // identifier quoting (MySQL backticks vs ANSI double quotes) is needed.
+        "  STRING_AGG(c_reference, ',' ORDER BY c_transaction_id) AS concat_references " +
         "FROM " + SOURCE_TABLE + " " +
         "WHERE c_statement_id = ? " +
         "GROUP BY c_value_date, c_transaction_date, c_type, c_ticker, c_description, c_currency " +
@@ -146,7 +149,7 @@ public final class SecuConsolidationQuery {
         row.put("c_amount", rs.getString("total_amount"));
         row.put("c_fee", rs.getString("total_fee"));
         row.put("c_total_amount", rs.getString("total_total_amount"));
-        row.put("c_reference", rs.getString("references"));
+        row.put("c_reference", rs.getString("concat_references"));
         return row;
     }
 

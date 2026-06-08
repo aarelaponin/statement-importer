@@ -66,8 +66,11 @@ public final class BankConsolidationQuery {
         "  c_other_side_bic, " +
         "  ROUND(SUM(CAST(c_payment_amount AS DECIMAL(15,2))), 2) AS total_amount, " +
         "  ROUND(SUM(CAST(c_transaction_fee AS DECIMAL(15,2))), 2) AS total_fee, " +
-        "  GROUP_CONCAT(c_provider_reference ORDER BY c_transaction_id SEPARATOR ',') AS provider_references, " +
-        "  GROUP_CONCAT(c_transaction_reference ORDER BY c_transaction_id SEPARATOR ',') AS transaction_references " +
+        // STRING_AGG is the SQL-standard string aggregate used by PostgreSQL (production)
+        // and supported natively by H2 (tests) in any compatibility mode. MySQL's
+        // GROUP_CONCAT(... SEPARATOR ...) is non-portable and fails on PostgreSQL.
+        "  STRING_AGG(c_provider_reference, ',' ORDER BY c_transaction_id) AS provider_references, " +
+        "  STRING_AGG(c_transaction_reference, ',' ORDER BY c_transaction_id) AS transaction_references " +
         "FROM " + SOURCE_TABLE + " " +
         "WHERE c_statement_id = ? " +
         "GROUP BY c_account_number, c_document_nr, c_payment_date, c_other_side_account, " +
